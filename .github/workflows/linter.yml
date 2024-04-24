@@ -1,0 +1,17 @@
+name: linter-check
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - uses: actions/checkout@v3
+
+      - run: make lint
