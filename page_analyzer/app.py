@@ -69,7 +69,7 @@ def add_url():
     return redirect(url_for('get_url_aftr_add', id=url_added_id))
 
 
-@app.route("/urls/<int:id>")
+@app.get("/urls/<int:id>")
 def get_url_aftr_add(id):
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
@@ -79,7 +79,7 @@ def get_url_aftr_add(id):
     return render_template('url.html', url=url_record)
 
 
-@app.route("/urls>")
+@app.get("/urls>")
 def get_all_urls():
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
