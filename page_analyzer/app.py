@@ -65,7 +65,6 @@ def add_url():
             )
         url_added = curs.fetchone()
         url_added_id = url_added.id
-    connection.close()
     flash('Страница успешно добавлена', 'success')
     return redirect(url_for('get_url_aftr_add', id=url_added_id))
 
@@ -82,7 +81,6 @@ def get_url_aftr_add(id):
             "SELECT * FROM urls_checks WHERE url_id=%s;", (id, )
         )
         checks = curs.fetchall()
-    connection.close()
     return render_template('url.html', url=url_record, checks=checks)
 
 
@@ -100,7 +98,6 @@ def get_all_urls():
             '''
             )
         urls = curs.fetchall()
-    connection.close()
     return render_template('urls.html', urls=urls)
 
 
@@ -133,7 +130,6 @@ def check_url(id):
             )
             connection.commit()
             flash('Страница успешно проверена', 'success')
-    connection.close()
     return redirect(url_for('get_url_aftr_add', id=id))
 
 
