@@ -21,49 +21,47 @@ app = Flask(__name__)
 
 load_dotenv()
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-DATABASE_URL = os.getenv('DATABASE_URL')
-
-
-
-try:
-    connection = psycopg2.connect(DATABASE_URL)
-except Exception:
-    print('Connection to the database failed')
 
 
 @app.route("/")
 def index():
     return render_template('index.html')
 
+
 @app.post("/urls")
 def add_url():
     # get new URL from html form
     url_new = request.form.to_dict()['url']
-    
+
     # check if new URL is correct
     valid_err = validate(url_new)
     if valid_err:
         flash(valid_err, 'danger')
         return render_template('index.html', url=url_new), 422
-    
+
     # normalize new URL for DB
     url_new = normalize(url_new)
 
     # write new URL to DB
+    connection = connect_db()
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
-            "SELECT * FROM urls WHERE name=%s;",(url_new,)
+            "SELECT * FROM urls WHERE name=%s;", (url_new, )
             )
         url_added = curs.fetchone()
         if url_added:
             flash('Страница уже существует', 'warning')
             return redirect(url_for('index'))
         curs.execute(
-            'INSERT INTO urls(name, created_at) VALUES (%s, %s);', (url_new, datetime.datetime.now())
+            '''
+            INSERT INTO urls(name, created_at)
+            VALUES (%s, %s);
+            ''',
+            (url_new, datetime.datetime.now())
         )
         connection.commit()
         curs.execute(
-            "SELECT * FROM urls WHERE name=%s;",(url_new,)
+            "SELECT * FROM urls WHERE name=%s;", (url_new, )
             )
         url_added = curs.fetchone()
         url_added_id = url_added.id
@@ -73,9 +71,10 @@ def add_url():
 
 @app.get("/urls/<int:id>")
 def get_url_aftr_add(id):
+    connection = connect_db()
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
-            "SELECT * FROM urls WHERE id=%s;",(id,)
+            "SELECT * FROM urls WHERE id=%s;", (id, )
             )
         url_record = curs.fetchone()
         curs.execute(
@@ -87,6 +86,7 @@ def get_url_aftr_add(id):
 
 @app.get("/urls>")
 def get_all_urls():
+    connection = connect_db()
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
             '''
@@ -103,9 +103,10 @@ def get_all_urls():
 
 @app.post("/urls/<int:id>/checks")
 def check_url(id):
+    connection = connect_db()
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
-            "SELECT * FROM urls WHERE id=%s;",(id,)
+            "SELECT * FROM urls WHERE id=%s;", (id,)
             )
         url = curs.fetchone()
         content = get_content(url.name)
@@ -132,6 +133,15 @@ def check_url(id):
     return redirect(url_for('get_url_aftr_add', id=id))
 
 
+# function for getting connection with DataBase
+def connect_db():
+    DATABASE_URL = os.getenv('DATABASE_URL')
+    try:
+        connection = psycopg2.connect(DATABASE_URL)
+        return connection
+    except Exception:
+        print('Connection to the database failed')
+
 
 # function for getting data from site for urls_checks db table
 def get_content(url):
@@ -139,7 +149,7 @@ def get_content(url):
         response = requests.get(url)
     except requests.exceptions.RequestException:
         return False
-    
+
     soup = BeautifulSoup(response.text, 'html.parser')
     h1 = soup.find('h1')
     title = soup.find('title')
@@ -155,7 +165,7 @@ def get_content(url):
 
 
 # function for validate URL
-def validate(url):   
+def validate(url):
     if not validators.url(url):
         return 'Введите корректный URL'
     elif len(url) > 255:
@@ -167,4 +177,4 @@ def normalize(url):
     parsed_url = urlparse(url)
     scheme = parsed_url.scheme
     netloc = parsed_url.netloc
-    return urlunparse([scheme, netloc, '', '','',''])
+    return urlunparse([scheme, netloc, '', '', '', ''])
