@@ -78,13 +78,16 @@ def get_url_aftr_add(id):
             )
         url_record = curs.fetchone()
         curs.execute(
-            "SELECT * FROM urls_checks WHERE url_id=%s;", (id, )
+            '''
+            SELECT * FROM urls_checks WHERE url_id=%s
+            ORDER BY urls_checks.id DESC;
+            ''', (id, )
         )
         checks = curs.fetchall()
     return render_template('url.html', url=url_record, checks=checks)
 
 
-@app.get("/urls>")
+@app.get("/urls")
 def get_all_urls():
     connection = connect_db()
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:

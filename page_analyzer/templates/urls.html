@@ -23,8 +23,8 @@
         <tr>
           <td>{{ url.id }}</td>
           <td><a href="{{ url_for('get_url_aftr_add', id=url.id) }}">{{ url.name }}</a></td>
-          <td>{{ url.created_at }}</td>
-          <td>{{ url.response_code }}</td>
+          <td>{{ url.created_at if url.created_at else '' }}</td>
+          <td>{{ url.response_code if url.response_code else ''}}</td>
         </tr>
       {% endfor %}
       
