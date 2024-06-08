@@ -50,22 +50,23 @@ def add_url():
             )
         url_added = curs.fetchone()
         if url_added:
+            url_added_id = url_added.id
             flash('Страница уже существует', 'warning')
-            return redirect(url_for('index'))
-        curs.execute(
-            '''
-            INSERT INTO urls(name, created_at)
-            VALUES (%s, %s);
-            ''',
-            (url_new, datetime.datetime.now())
-        )
-        connection.commit()
-        curs.execute(
-            "SELECT * FROM urls WHERE name=%s;", (url_new, )
+        else:
+            curs.execute(
+                '''
+                INSERT INTO urls(name, created_at)
+                VALUES (%s, %s);
+                ''',
+                (url_new, datetime.datetime.now())
             )
-        url_added = curs.fetchone()
-        url_added_id = url_added.id
-    flash('Страница успешно добавлена', 'success')
+            connection.commit()
+            curs.execute(
+                "SELECT * FROM urls WHERE name=%s;", (url_new, )
+                )
+            url_added = curs.fetchone()
+            url_added_id = url_added.id
+            flash('Страница успешно добавлена', 'success')
     return redirect(url_for('get_url_aftr_add', id=url_added_id))
 
 
