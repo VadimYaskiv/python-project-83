@@ -171,9 +171,9 @@ def get_content(url):
 # function for validate URL
 def validate(url):
     if not validators.url(url):
-        return 'Введите корректный URL'
+        return 'Некорректный URL'
     elif len(url) > 255:
-        return 'Введите URL, не превышающий 255 символов'
+        return 'Некорректный URL'
 
 
 # function for URL normalization
