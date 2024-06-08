@@ -115,7 +115,7 @@ def check_url(id):
         url = curs.fetchone()
         content = get_content(url.name)
         if not content:
-            flash('Произошла ошибка при проверке', 'danger')
+            flash('Произошла ошибка при проверке', 'warning')
         else:
             curs.execute(
                 '''
