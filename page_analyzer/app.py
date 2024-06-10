@@ -151,6 +151,7 @@ def connect_db():
 def get_content(url):
     try:
         response = requests.get(url)
+        response.raise_for_status()
     except requests.exceptions.RequestException:
         return False
 
