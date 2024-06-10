@@ -47,7 +47,7 @@ def add_url():
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
             "SELECT * FROM urls WHERE name=%s;", (url_new, )
-            )
+        )
         url_added = curs.fetchone()
         if url_added:
             url_added_id = url_added.id
@@ -63,7 +63,7 @@ def add_url():
             connection.commit()
             curs.execute(
                 "SELECT * FROM urls WHERE name=%s;", (url_new, )
-                )
+            )
             url_added = curs.fetchone()
             url_added_id = url_added.id
             flash('Страница успешно добавлена', 'success')
@@ -76,7 +76,7 @@ def get_url_aftr_add(id):
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
             "SELECT * FROM urls WHERE id=%s;", (id, )
-            )
+        )
         url_record = curs.fetchone()
         curs.execute(
             '''
@@ -100,7 +100,7 @@ def get_all_urls():
             LEFT JOIN urls_checks as uch ON u.id = uch.url_id
             ORDER BY u.id DESC, uch.id DESC;
             '''
-            )
+        )
         urls = curs.fetchall()
     return render_template('urls.html', urls=urls)
 
@@ -111,7 +111,7 @@ def check_url(id):
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
             "SELECT * FROM urls WHERE id=%s;", (id,)
-            )
+        )
         url = curs.fetchone()
         content = get_content(url.name)
         if not content:
@@ -165,7 +165,7 @@ def get_content(url):
         'h1': h1.get_text() if h1 else '',
         'title': title.get_text() if title else '',
         'description': description['content'] if description else ''
-        }
+    }
     return site_content
 
 
