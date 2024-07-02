@@ -31,12 +31,12 @@ def insert_url_to_db(url_name):
     connection = connect_db()
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
-                '''
-                INSERT INTO urls(name, created_at)
-                VALUES (%s, %s);
-                ''',
-                (url_name, datetime.datetime.now())
-            )
+            '''
+            INSERT INTO urls(name, created_at)
+            VALUES (%s, %s);
+            ''',
+            (url_name, datetime.datetime.now())
+        )
         connection.commit()
         curs.execute(
             "SELECT * FROM urls WHERE name=%s;", (url_name, )
@@ -110,19 +110,19 @@ def insert_checks_data(id, content):
     connection = connect_db()
     with connection.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute(
-                '''
-                INSERT INTO urls_checks
-                (url_id, response_code, h1, title, description, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s);
-                ''',
-                (
-                    id,
-                    content['response_code'],
-                    content['h1'],
-                    content['title'],
-                    content['description'],
-                    datetime.datetime.now(),
-                )
+            '''
+            INSERT INTO urls_checks
+            (url_id, response_code, h1, title, description, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s);
+            ''',
+            (
+                id,
+                content['response_code'],
+                content['h1'],
+                content['title'],
+                content['description'],
+                datetime.datetime.now(),
             )
+        )
         connection.commit()
     return True
